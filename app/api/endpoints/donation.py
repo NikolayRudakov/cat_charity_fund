@@ -1,7 +1,6 @@
 ﻿# app/api/endpoints/donation.py
 from typing import List
-from fastapi import APIRouter, Depends, Response
-from fastapi.responses import JSONResponse
+from fastapi import APIRouter, Depends
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.models import User
@@ -63,4 +62,3 @@ async def get_my_donations(
     """Получает список всех пожертвований текущего пользователя."""
     donations = await donation_crud.get_by_user(session=session, user=user)
     return donations
-
