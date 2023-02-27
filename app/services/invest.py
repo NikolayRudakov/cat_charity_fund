@@ -10,7 +10,7 @@ from app.models import Donation, CharityProject
 async def process_invest(session: AsyncSession):
 
     open_projects = await session.execute(
-        select(CharityProject).where(CharityProject.fully_invested is False)
+        select(CharityProject).where(CharityProject.fully_invested == 0)
     )
     open_projects_all = open_projects.scalars().all()
 
@@ -19,7 +19,7 @@ async def process_invest(session: AsyncSession):
         total_need = total_need + project.full_amount - project.invested_amount
 
     open_donations = await session.execute(
-        select(Donation).where(Donation.fully_invested is False)
+        select(Donation).where(Donation.fully_invested == 0)
     )
     open_donations = open_donations.scalars().all()
 
@@ -36,7 +36,7 @@ async def process_invest(session: AsyncSession):
 
     while total > 0:
         open_project = await session.execute(
-            select(CharityProject).where(CharityProject.fully_invested is False)
+            select(CharityProject).where(CharityProject.fully_invested == 0)
         )
         open_project = open_project.scalars().first()
         project_sum = open_project.full_amount - open_project.invested_amount
@@ -55,7 +55,7 @@ async def process_invest(session: AsyncSession):
 
     while total_d > 0:
         open_donation = await session.execute(
-            select(Donation).where(Donation.fully_invested is False)
+            select(Donation).where(Donation.fully_invested == 0)
         )
         open_donation = open_donation.scalars().first()
         donation_sum = open_donation.full_amount - open_donation.invested_amount
@@ -75,6 +75,6 @@ async def process_invest(session: AsyncSession):
             session.add(open_donation)
 
     await session.commit()
-    open_donation = await session.execute(select(Donation))
-    open_project = await session.execute(select(CharityProject))
+    await session.execute(select(Donation))
+    await session.execute(select(CharityProject))
     # await session.refresh() не работает
